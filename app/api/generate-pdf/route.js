@@ -5,21 +5,32 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 async function getBrowser() {
-  // Di Vercel (production/serverless) pakai chromium yang di-bundle @sparticuz/chromium.
-  // Di lokal (development, ada Chrome/Chromium ter-install), pakai itu langsung biar cepat.
   const chromium = (await import("@sparticuz/chromium")).default;
   const puppeteer = await import("puppeteer-core");
 
   const isLocalDev = process.env.NODE_ENV === "development" && process.env.CHROME_PATH;
 
-  const executablePath = isLocalDev
-    ? process.env.CHROME_PATH
-    : await chromium.executablePath();
+  if (isLocalDev) {
+    return puppeteer.launch({
+      args: chromium.args,
+      executablePath: process.env.CHROME_PATH,
+      headless: true,
+    });
+  }
+
+  // Matikan graphics mode untuk lingkungan Serverless/Vercel
+  chromium.setGraphicsMode = false;
+
+  // Tentukan path ke binary remote v126 / terstabil untuk sparticuz
+  const executablePath = await chromium.executablePath(
+    "https://github.com/Sparticuz/chromium/releases/download/v126.0.0/chromium-v126.0.0-pack.tar"
+  );
 
   return puppeteer.launch({
     args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
     executablePath,
-    headless: true,
+    headless: chromium.headless,
   });
 }
 
