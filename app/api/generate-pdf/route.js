@@ -18,18 +18,13 @@ async function getBrowser() {
     });
   }
 
-  // Matikan graphics mode untuk lingkungan Serverless/Vercel
-  chromium.setGraphicsMode = false;
-
-  // Tentukan path ke binary remote v126 / terstabil untuk sparticuz
-  const executablePath = await chromium.executablePath(
-    "https://github.com/Sparticuz/chromium/releases/download/v126.0.0/chromium-v126.0.0-pack.tar"
-  );
+  // Set URL langsung ke release tarball resmi Sparticuz
+  const CHROMIUM_URL = "https://github.com/Sparticuz/chromium/releases/download/v126.0.0/chromium-v126.0.0-pack.tar";
 
   return puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
-    executablePath,
+    executablePath: await chromium.executablePath(CHROMIUM_URL),
     headless: chromium.headless,
   });
 }

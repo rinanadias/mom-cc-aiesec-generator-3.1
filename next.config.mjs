@@ -1,9 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverExternalPackages: ['@sparticuz/chromium'],
-  outputFileTracingIncludes: {
-    '/api/**/*': ['./node_modules/@sparticuz/chromium/bin/*'],
-  },
+  serverExternalPackages: ["@sparticuz/chromium"],
 };
 
 export default nextConfig;
